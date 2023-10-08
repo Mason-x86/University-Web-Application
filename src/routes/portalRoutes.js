@@ -68,15 +68,14 @@ portalRouter.get('/portal_students', function(req, res){(
         const result = await request
             .query('select * from Students where email = @emailvar and password = @pass');
         debug(result);
-        student_info = result;
-        const request2 = new sql.Request();
-        request2.input('studentid', sql.Int, studentinfo.recordset[0].student_id);
-        result2 = await request2
-        .query('select Courses.course_name, Courses.course_id FROM Courses, Enrollment, Students where Students.student_id = @studentid and Students.student_id = Enrollment.student_id and Enrollment.course_id = Courses.course_id');
-        enroll_info = result2;
-
+        var student_info = result;
         var course_info;
         if (student_info.recordset.length > 0){
+            const request2 = new sql.Request();
+            request2.input('studentid', sql.Int, studentinfo.recordset[0].student_id);
+            result2 = await request2
+            .query('select Courses.course_name, Courses.course_id FROM Courses, Enrollment, Students where Students.student_id = @studentid and Students.student_id = Enrollment.student_id and Enrollment.course_id = Courses.course_id');
+            enroll_info = result2;
             const request = new sql.Request();
             request.input('studentid', sql.Int, student_info.recordset[0].student_id);
             const result = await request

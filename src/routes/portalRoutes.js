@@ -272,6 +272,50 @@ portalRouter.post("/portal_staff", function (req, res) {
     }());
 });
 
+portalRouter.post("/course_view_students/:id", function (req, res) {
+    
+    debug(req.cookies.StudentEmail);
+    debug(req.cookies.StudentPassword);
+    let email = req.cookies.StudentEmail;
+    let password = req.cookies.StudentPassword;
+    
+    var itemId = req.params.id;
+    debug("itemId");
+    debug(itemId);
+      
+
+    (async function query() { 
+        const request = new sql.Request();
+        request.input('emailvar', sql.VarChar, email);
+        const result = await request
+            .query('select * from Students where email = @emailvar');
+        var studentinfo = result;
+        debug(studentinfo)
+        debug('information')
+        if (studentinfo.recordset.length > 0){
+            const transaction = new sql.Transaction(/* [pool] */);
+            transaction.begin(err => {
+            // ... error checks
+        
+                const request = new sql.Request(transaction)
+                request.input('course_id', sql.Int, parseInt(itemId));
+                request.input('student_id', sql.Int, studentinfo.recordset[0].student_id);
+
+                request.query('insert into Enrollment (student_id, course_id) values (@course_id, @student)', (err, result) => {
+                // ... error checks
+        
+                    transaction.commit(err => {
+                    // ... error checks
+        
+                        debug("Transaction committed.")
+                    })
+                })
+            })
+        }
+    
+    }());
+});
+
 portalRouter.route('/course_view/:id')
 .get( function(req, res){
     (async function query() {

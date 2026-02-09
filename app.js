@@ -40,7 +40,7 @@ app.use(portalRouter);
 
 const config = {
     user: 'Mason',
-    password: 'Number46@king',
+    password: '',
     server: 'generalmason.database.windows.net',
     database: 'HRdb',
     option: {
